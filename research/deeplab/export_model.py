@@ -36,6 +36,10 @@ flags.DEFINE_string('export_path', None,
 
 flags.DEFINE_integer('num_classes', 21, 'Number of classes.')
 
+flags.DEFINE_integer('width', 513, 'Number of classes.')
+
+flags.DEFINE_integer('height', 513, 'Number of classes.')
+
 flags.DEFINE_multi_integer('crop_size', [513, 513],
                            'Crop size [height, width].')
 
@@ -88,7 +92,7 @@ def _create_input_tensors():
     resized_image_size: Resized image shape tensor [height, width].
   """
   # input_preprocess takes 4-D image tensor as input.
-  input_image = tf.placeholder(tf.uint8, [1, None, None, 3], name=_INPUT_NAME)
+  input_image = tf.placeholder(tf.float32, [1, FLAGS.crop_size[0], FLAGS.crop_size[1], 3], name=_INPUT_NAME)
   original_image_size = tf.shape(input_image)[1:3]
 
   # Squeeze the dimension in axis=0 since `preprocess_image_and_label` assumes
@@ -118,6 +122,7 @@ def main(unused_argv):
   tf.logging.info('Prepare to export model to: %s', FLAGS.export_path)
 
   with tf.Graph().as_default():
+    print(FLAGS.crop_size)
     image, image_size, resized_image_size = _create_input_tensors()
 
     model_options = common.ModelOptions(
@@ -191,11 +196,22 @@ def main(unused_argv):
         clear_devices=True,
         initializer_nodes=None)
 
+    print("Saved model to", FLAGS.export_path)
+
     if FLAGS.save_inference_graph:
       tf.train.write_graph(graph_def, dirname, 'inference_graph.pbtxt')
 
 
 if __name__ == '__main__':
-  flags.mark_flag_as_required('checkpoint_path')
-  flags.mark_flag_as_required('export_path')
+  # flags.mark_flag_as_required('checkpoint_path')
+  # flags.mark_flag_as_required('export_path')
+  # FLAGS.model_variant = 'xception_65'
+  # FLAGS.checkpoint_path = '/home/royuntu/workspace/tensorflow_models/research/deeplab/checkpoints/' + \
+  #                         FLAGS.model_variant + '/model.ckpt'
+  # FLAGS.export_path = '/home/royuntu/workspace/tensorflow_models/research/deeplab/checkpoints/' + \
+  #                     FLAGS.model_variant + '/exported.pb'
+
+  if FLAGS.model_variant == 'xception_65':
+      FLAGS.atrous_rates = [6, 12, 18] if FLAGS.output_stride == 16 else [12, 24, 36]
+  FLAGS.crop_size = [FLAGS.height, FLAGS.width]
   tf.app.run()

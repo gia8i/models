@@ -160,11 +160,13 @@ OUTPUT_TYPE = 'semantic'
 
 # Semantic segmentation item names.
 LABELS_CLASS = 'labels_class'
+LABELS_REV_CLASS = 'labels_rev_class'
 IMAGE = 'image'
 HEIGHT = 'height'
 WIDTH = 'width'
 IMAGE_NAME = 'image_name'
 LABEL = 'label'
+LABEL_REV = 'label_rev'
 ORIGINAL_IMAGE = 'original_image'
 
 # Test set name.
