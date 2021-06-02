@@ -33,12 +33,12 @@ import collections
 import six
 import tensorflow as tf
 
-FLAGS = tf.app.flags.FLAGS
+FLAGS = tf.compat.v1.flags.FLAGS
 
-tf.app.flags.DEFINE_enum('image_format', 'png', ['jpg', 'jpeg', 'png'],
+tf.compat.v1.flags.DEFINE_enum('image_format', 'png', ['jpg', 'jpeg', 'png'],
                          'Image format.')
 
-tf.app.flags.DEFINE_enum('label_format', 'png', ['png'],
+tf.compat.v1.flags.DEFINE_enum('label_format', 'png', ['png'],
                          'Segmentation label format.')
 
 # A map from image format to expected data format.
@@ -60,9 +60,9 @@ class ImageReader(object):
       channels: Image channels.
     """
     with tf.Graph().as_default():
-      self._decode_data = tf.placeholder(dtype=tf.string)
+      self._decode_data = tf.compat.v1.placeholder(dtype=tf.string)
       self._image_format = image_format
-      self._session = tf.Session()
+      self._session = tf.compat.v1.Session()
       if self._image_format in ('jpeg', 'jpg'):
         self._decode = tf.image.decode_jpeg(self._decode_data,
                                             channels=channels)
@@ -159,3 +159,32 @@ def image_seg_to_tfexample(image_data, filename, height, width, seg_data):
       'image/segmentation/class/format': _bytes_list_feature(
           FLAGS.label_format),
   }))
+
+def image_seg_to_tfexample_width_rev(image_data, filename, height, width, seg_data, seg_rev_data):
+    """Converts one image/segmentation pair to tf example.
+
+    Args:
+      image_data: string of image data.
+      filename: image filename.
+      height: image height.
+      width: image width.
+      seg_data: string of semantic segmentation data.
+
+    Returns:
+      tf example of one image/segmentation pair.
+    """
+    return tf.train.Example(features=tf.train.Features(feature={
+        'image/encoded': _bytes_list_feature(image_data),
+        'image/filename': _bytes_list_feature(filename),
+        'image/format': _bytes_list_feature(
+            _IMAGE_FORMAT_MAP[FLAGS.image_format]),
+        'image/height': _int64_list_feature(height),
+        'image/width': _int64_list_feature(width),
+        'image/channels': _int64_list_feature(3),
+        'image/segmentation/class/encoded': (
+            _bytes_list_feature(seg_data)),
+        'image/segmentation/class/encoded_rev': (
+            _bytes_list_feature(seg_rev_data)),
+        'image/segmentation/class/format': _bytes_list_feature(
+            FLAGS.label_format),
+    }))

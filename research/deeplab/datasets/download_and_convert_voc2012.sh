@@ -51,7 +51,7 @@ download_and_uncompress() {
     wget -nd -c "${BASE_URL}/${FILENAME}"
   fi
   echo "Uncompressing ${FILENAME}"
-  sudo apt install unzip
+  sudo zypper in unzip
   unzip "${FILENAME}"
 }
 
