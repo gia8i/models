@@ -462,26 +462,36 @@ def main(unused_argv):
 
 
 if __name__ == '__main__':
-    flags.mark_flag_as_required('train_logdir')
-    flags.mark_flag_as_required('dataset_dir')
+    # flags.mark_flag_as_required('train_logdir')
+    # flags.mark_flag_as_required('dataset_dir')
+    # FLAGS.dataset_dir = 'datasets/pascal_voc_seg/tfrecord'
+    # FLAGS.dataset = 'pascal_voc_seg'
+    # FLAGS.train_logdir = 'train_log'
+    # FLAGS.model_variant = 'mobilenet_v2'
+    # FLAGS.train_batch_size = 2k
+    # FLAGS.fine_tune_batch_norm = False
+    # FLAGS.tf_initial_checkpoint = 'checkpoints/mobilenet_v2/model.ckpt-30000'
+
     FLAGS.train_logdir = './train_log'
     FLAGS.save_summaries_images = True
-    FLAGS.optimizer = 'adam'
-    FLAGS.initialize_last_layer = False
-    FLAGS.train_batch_size = 2
-    FLAGS.model_variant = 'mobilenet_v2'
-    FLAGS.base_learning_rate = 1e-5
-    FLAGS.training_number_of_steps = 5000
+    # FLAGS.optimizer = 'adam'
+    FLAGS.initialize_last_layer = True
+    FLAGS.last_layers_contain_logits_only = True
+    FLAGS.train_batch_size = 8
+    FLAGS.model_variant = 'mobilenet_v3_large_seg'
+    FLAGS.base_learning_rate = 1e-4
+    FLAGS.training_number_of_steps = 200000
     FLAGS.save_interval_secs = 30
     FLAGS.save_summaries_secs = 30
     FLAGS.fine_tune_batch_norm = False
+    FLAGS.dataset = 'pascal_voc_seg'
+    FLAGS.dataset_dir = '/home/royal/workspace/models/research/deeplab/datasets/pascal_voc_seg/tfrecord'
+    FLAGS.weight_decay = 0.0001
 
-
-    FLAGS.dataset_dir = 'datasets/pascal_voc_seg/tfrecord'
     if 'mobilenet_v2' in FLAGS.model_variant:
-        FLAGS.tf_initial_checkpoint = 'checkpoints/mobilenet_v2/model.ckpt-30000'
+        FLAGS.tf_initial_checkpoint = '/home/royal/workspace/models/research/deeplab/checkpoints/mobilenet_v2/model.ckpt-30000'
     elif 'mobilenet_v3' in FLAGS.model_variant:
-        FLAGS.dataset_dir = 'datasets/pascal_voc_seg/tfrecord'
+        # FLAGS.dataset_dir = 'datasets/pascal_voc_seg/tfrecord'
         FLAGS.image_pooling_crop_size = [769, 769]
         FLAGS.image_pooling_stride = [4, 5]
         FLAGS.add_image_level_feature = 1
@@ -489,14 +499,16 @@ if __name__ == '__main__':
         FLAGS.aspp_with_concat_projection = 0
         FLAGS.aspp_with_squeeze_and_excitation = 1
         FLAGS.decoder_use_sum_merge = 1
-        FLAGS.decoder_filters = 19
+        FLAGS.decoder_filters = 21
         FLAGS.decoder_output_is_logits = 1
         FLAGS.image_se_uses_qsigmoid = 1
-        FLAGS.decoder_output_stride = [8]
+        FLAGS.decoder_output_stride = [4]
         FLAGS.output_stride = 32
         FLAGS.train_crop_size = [769, 769]
-        FLAGS.tf_initial_checkpoint = './checkpoints/mobilenet_v3_large_seg/model.ckpt'
-        FLAGS.dataset = 'cihp'
+        #FLAGS.tf_initial_checkpoint = 'checkpoints/mobilenet_v3_large_seg/model.ckpt'
+        FLAGS.tf_initial_checkpoint = \
+            '/home/royal/workspace/models/research/deeplab/train_log_much_better/model.ckpt-200000'
+        # FLAGS.dataset = 'cihp'
 
 
 

@@ -86,7 +86,7 @@ def get_extra_layer_scopes(last_layers_contain_logits_only=False):
     A list of scopes for extra layers.
   """
   if last_layers_contain_logits_only:
-    return [LOGITS_SCOPE_NAME]
+    return [LOGITS_SCOPE_NAME, DECODER_SCOPE]
   else:
     return [
         LOGITS_SCOPE_NAME,
